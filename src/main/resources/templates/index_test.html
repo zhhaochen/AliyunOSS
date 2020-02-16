@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>阿里云OSS上传文件</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <script src="js/jquery-3.4.1.min.js" type="application/javascript"></script>
+    <script src="js/bootstrap.min.js" type="application/javascript"></script>
+</head>
+
+<body>
+<script type="text/javascript">
+    $(function () {
+        $('#uploadFile').click(function () {
+            $('#downloadTestCaseBtn').hide();
+        });
+        $('#uploadTestCase').click(function () {
+            let uploadFileName = $('#uploadFile').val();
+            if (uploadFileName.length === 0) {
+                alert('请选择需要上传的测试用例');
+                return;
+            }
+            formData = new FormData()
+            formData.append('file', $('#uploadFile')[0].files[0]); //传到后端的参数
+            $.ajax({
+                method: 'POST',
+                url: '/uploadPic',
+                cache: false,
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (uri) {
+                    $('#downloadTestCase').attr('href', uri);
+                    $('#downloadTestCaseBtn').show()
+                },
+                error: function () {
+                    $('#downloadTestCase').attr('href', '');
+                    $('#downloadTestCaseBtn').hide()
+                }
+            })
+        })});
+</script>
+<div th:replace="~{header :: header}"></div>
+<form id="uploadForm" class="form-check-inline" enctype="multipart/form-data">
+    <input id="uploadFile" style="width: 200px" class="input-group-append" type="file" name="file"/><!--这样一个input点击会自己选择文件-->
+    <button id="uploadTestCase" type="button" class="btn-dark">上传测试用例</button>
+</form>
+<button type="button" id="downloadTestCaseBtn" class="btn-outline-success" style="display: none">
+    <a href="#" id="downloadTestCase" download>上传成功，点击下载</a>
+</button>
+</body>
+</html>
